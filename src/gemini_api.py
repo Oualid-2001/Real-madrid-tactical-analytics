@@ -25,6 +25,13 @@ class GeminiAPIError(RuntimeError):
 
 
 def format_gemini_error(error: Exception) -> str:
+    if isinstance(error, GeminiAPIError) and error.status_code == 401:
+        return (
+            "Gemini rejected GEMINI_API_KEY. Make sure it is an API key created "
+            "in Google AI Studio (not an OAuth access token), then replace the "
+            "value in your local .env or Streamlit Cloud Secrets and restart the app. "
+            "Never share the key publicly."
+        )
     if isinstance(error, GeminiAPIError) and error.status_code == 429:
         detail = error.detail.casefold()
         if "free_tier" in detail or "per day" in detail:
