@@ -17,6 +17,30 @@ API_URL = (
 )
 
 
+class GeminiAPIError(RuntimeError):
+    def __init__(self, status_code: int, detail: str):
+        self.status_code = status_code
+        self.detail = detail
+        super().__init__(f"Gemini API error {status_code}: {detail}")
+
+
+def format_gemini_error(error: Exception) -> str:
+    if isinstance(error, GeminiAPIError) and error.status_code == 429:
+        detail = error.detail.casefold()
+        if "free_tier" in detail or "per day" in detail:
+            return (
+                "Gemini's daily free-tier request quota is exhausted. "
+                "Wait for the quota to reset, or review the Google AI Studio "
+                "rate limits and billing settings: https://ai.dev/rate-limit"
+            )
+        return (
+            "Gemini is temporarily rate-limiting requests or the project quota "
+            "has been reached. Wait before retrying and check "
+            "https://ai.dev/rate-limit"
+        )
+    return str(error)
+
+
 def generate_tactical_analysis(match_data: str) -> str:
     if not API_KEY:
         raise RuntimeError(
@@ -54,10 +78,7 @@ def generate_tactical_analysis(match_data: str) -> str:
     )
 
     if not response.ok:
-        raise RuntimeError(
-            f"Gemini API error {response.status_code}: "
-            f"{response.text[:500]}"
-        )
+        raise GeminiAPIError(response.status_code, response.text[:1000])
 
     data = response.json()
     candidates = data.get("candidates", [])

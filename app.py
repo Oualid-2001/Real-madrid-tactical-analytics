@@ -43,9 +43,12 @@ st.html(
 )
 
 try:
-    from src.gemini_api import generate_tactical_analysis
+    from src.gemini_api import format_gemini_error, generate_tactical_analysis
 except ImportError:
     generate_tactical_analysis = None
+
+    def format_gemini_error(error: Exception) -> str:
+        return str(error)
 
 
 PLAYER_ALIASES = {
@@ -586,7 +589,10 @@ with match_columns[1]:
                         try:
                             next_report = generate_tactical_analysis(next_prompt)
                         except (requests.RequestException, RuntimeError, ValueError, OSError) as exc:
-                            st.error(f"Gemini analysis failed: {exc}")
+                            st.error(
+                                format_gemini_error(exc),
+                                title="Gemini analysis unavailable",
+                            )
                         else:
                             st.session_state["next_match_report"] = next_report
                             st.session_state["next_match_report_id"] = str(next_event["id"])
@@ -907,7 +913,10 @@ Rows available: {len(analysis_data)}
             try:
                 report = generate_tactical_analysis(prompt)
             except (requests.RequestException, RuntimeError, ValueError, OSError) as exc:
-                st.error(f"Gemini analysis failed: {exc}")
+                st.error(
+                    format_gemini_error(exc),
+                    title="Gemini analysis unavailable",
+                )
             else:
                 st.markdown(report)
                 st.download_button(

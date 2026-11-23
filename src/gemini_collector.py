@@ -8,6 +8,7 @@ import pandas as pd
 import requests
 from dotenv import load_dotenv
 
+from src.gemini_api import GeminiAPIError, format_gemini_error
 from src.settings import get_setting
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -186,5 +187,7 @@ Do not treat missing statistics as zero.
 if __name__ == "__main__":
     try:
         main()
+    except GeminiAPIError as exc:
+        print(f"\nCollection failed: {format_gemini_error(exc)}")
     except (requests.RequestException, RuntimeError, ValueError) as exc:
         print(f"\nCollection failed: {exc}")
