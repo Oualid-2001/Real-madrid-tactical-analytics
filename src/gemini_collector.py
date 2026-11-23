@@ -9,7 +9,7 @@ import requests
 from dotenv import load_dotenv
 
 from src.gemini_api import GeminiAPIError, format_gemini_error
-from src.settings import get_setting
+from src.settings import get_gemini_model, get_setting
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
@@ -17,7 +17,7 @@ DATA_DIR.mkdir(parents=True, exist_ok=True)
 load_dotenv(ROOT / ".env")
 
 API_KEY = get_setting("GEMINI_API_KEY")
-MODEL = get_setting("GEMINI_MODEL", "gemini-2.5-flash")
+MODEL = get_gemini_model()
 API_URL = (
     "https://generativelanguage.googleapis.com/v1beta/models/"
     f"{MODEL}:generateContent"

@@ -30,7 +30,7 @@ The Gemini API key must stay private; do not commit `.env` or Streamlit secrets 
 
   ```toml
   GEMINI_API_KEY = "your-gemini-api-key"
-  GEMINI_MODEL = "gemini-2.5-flash"
+  GEMINI_MODEL = "gemini-3.8-flash"
   ```
 
 The app's analysis and data refresh features read the key from either location. `.streamlit/secrets.toml` is ignored by Git. A safe template is available in `.streamlit/secrets.toml.example`. The analyst uses supplied data and does not independently verify its source.
