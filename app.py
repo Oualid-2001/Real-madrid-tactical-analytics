@@ -1,5 +1,6 @@
 from pathlib import Path
 import json
+import os
 import subprocess
 import sys
 import datetime as dt
@@ -8,6 +9,7 @@ import pandas as pd
 import plotly.express as px
 import requests
 import streamlit as st
+from src.settings import get_setting
 
 PROJECT_ROOT = Path(__file__).resolve().parent
 DATA_DIR = PROJECT_ROOT / "data"
@@ -149,9 +151,14 @@ def refresh_match_data() -> tuple[bool, str]:
         python = Path(sys.executable)
 
     try:
+        environment = os.environ.copy()
+        api_key = get_setting("GEMINI_API_KEY")
+        if api_key:
+            environment["GEMINI_API_KEY"] = api_key
         result = subprocess.run(
-            [str(python), str(collector)],
+            [str(python), "-m", "src.gemini_collector"],
             cwd=PROJECT_ROOT,
+            env=environment,
             capture_output=True,
             text=True,
             timeout=300,

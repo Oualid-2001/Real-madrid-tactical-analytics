@@ -1,7 +1,6 @@
 """Collect candidate Real Madrid statistics using Gemini."""
 
 import json
-import os
 import re
 from pathlib import Path
 
@@ -9,13 +8,15 @@ import pandas as pd
 import requests
 from dotenv import load_dotenv
 
+from src.settings import get_setting
+
 ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = ROOT / "data"
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 load_dotenv(ROOT / ".env")
 
-API_KEY = os.getenv("GEMINI_API_KEY")
-MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+API_KEY = get_setting("GEMINI_API_KEY")
+MODEL = get_setting("GEMINI_MODEL", "gemini-2.5-flash")
 API_URL = (
     "https://generativelanguage.googleapis.com/v1beta/models/"
     f"{MODEL}:generateContent"
@@ -37,7 +38,9 @@ PLAYER_COLUMNS = [
 
 def ask_gemini(prompt):
     if not API_KEY:
-        raise RuntimeError("GEMINI_API_KEY is missing from .env")
+        raise RuntimeError(
+            "GEMINI_API_KEY is not configured. Set it in .env or Streamlit secrets."
+        )
 
     response = requests.post(
         API_URL,

@@ -21,9 +21,19 @@ Use **Refresh match data** in the sidebar to refresh the CSV data using the Gemi
 
 The app recognizes common header variations, including underscores and spaces. Match data can include `Date`, `Competition`, `Opponent`, `Goals_For`, `Goals_Against`, `xG_For`, `xG_Against`, `Shots`, `Shots_On_Target`, and `Possession_Pct`. Player data can include `Player`, `Position`, `Appearances`, `Minutes`, `Goals`, `Assists`, `Shots`, `Shots_On_Target`, `xG`, and `xA`. Missing metrics are omitted from charts and shown as unavailable rather than generated.
 
-## Optional Gemini analysis
+## Gemini API setup
 
-Copy `.env.example` to `.env` and set `GEMINI_API_KEY` to enable Gemini analysis and refresh. Never commit `.env`; it is excluded by `.gitignore`. The analyst uses supplied data and does not independently verify its source.
+The Gemini API key must stay private; do not commit `.env` or Streamlit secrets to GitHub.
+
+- **Local:** copy `.env.example` to `.env` and set `GEMINI_API_KEY`.
+- **Streamlit Community Cloud:** open the app's **Settings → Secrets** and add:
+
+  ```toml
+  GEMINI_API_KEY = "your-gemini-api-key"
+  GEMINI_MODEL = "gemini-2.5-flash"
+  ```
+
+The app's analysis and data refresh features read the key from either location. `.streamlit/secrets.toml` is ignored by Git. A safe template is available in `.streamlit/secrets.toml.example`. The analyst uses supplied data and does not independently verify its source.
 
 ## Data notes
 

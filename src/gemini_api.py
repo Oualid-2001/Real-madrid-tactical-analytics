@@ -1,15 +1,15 @@
-
-import os
 from pathlib import Path
 
 import requests
 from dotenv import load_dotenv
 
+from src.settings import get_setting
+
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(PROJECT_ROOT / ".env")
 
-API_KEY = os.getenv("GEMINI_API_KEY")
-MODEL = "gemini-2.5-flash"
+API_KEY = get_setting("GEMINI_API_KEY")
+MODEL = get_setting("GEMINI_MODEL", "gemini-2.5-flash")
 
 API_URL = (
     f"https://generativelanguage.googleapis.com/v1beta/"
@@ -19,7 +19,9 @@ API_URL = (
 
 def generate_tactical_analysis(match_data: str) -> str:
     if not API_KEY:
-        raise RuntimeError("GEMINI_API_KEY is missing from .env")
+        raise RuntimeError(
+            "GEMINI_API_KEY is not configured. Set it in .env or Streamlit secrets."
+        )
 
     response = requests.post(
         API_URL,
